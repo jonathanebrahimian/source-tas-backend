@@ -63,8 +63,8 @@ async def update_class_data(id: str, req: UpdateClassModel = Body(...)):
 
 @router.delete("/{id}", response_description="Class data deleted from the database")
 async def delete_class_data(id: str):
-    deleted_student = await delete_class(id)
-    if deleted_student:
+    deleted_class = await delete_class(id)
+    if deleted_class:
         return ResponseModel(
             "Class with ID: {} removed".format(id), "Class deleted successfully"
         )
