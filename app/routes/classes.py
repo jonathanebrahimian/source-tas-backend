@@ -28,9 +28,6 @@ async def add_class_data(class_data: ClassSchema = Body(...)):
 
 @router.get("/", response_description="Classes retrieved")
 async def get_classs(active: bool=None):
-    logger.debug(active)
-    logger.warning(active)
-
     classes = await retrieve_classes(active=active)
     if classes:
         return ResponseModel(classes, "Classes data retrieved successfully")

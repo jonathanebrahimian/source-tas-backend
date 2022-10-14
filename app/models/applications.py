@@ -2,16 +2,14 @@ from typing import Optional, Union
 from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 from bson.objectid import ObjectId
-
-
-class Labs(BaseModel):
-    time: datetime
-    name: str
+from bson import binData
+from models.classes import ClassSchema
 
 class Applications(BaseModel):
     email: str = EmailStr
     time: datetime
-    labs: Union[list[Labs], None] = None
+    resume: binData
+    classes: list[ClassSchema]
     
 
     class Config:
@@ -49,15 +47,3 @@ class UpdateApplicationsModel(BaseModel):
                 }]
             }
         }
-
-
-def ResponseModel(data, message):
-    return {
-        "data": [data],
-        "code": 200,
-        "message": message,
-    }
-
-
-def ErrorResponseModel(error, code, message):
-    return {"error": error, "code": code, "message": message}
