@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
 from logzero import logger
+from app.models.users import User
+from app.routes.auth import get_current_user
 
 from app.database import (
     add_class,
@@ -20,7 +22,7 @@ router = APIRouter()
 
 
 @router.post("/", response_description="Class data added into the database")
-async def add_class_data(class_data: ClassSchema = Body(...)):
+async def add_class_data(class_data: ClassSchema = Body(...),current_user: User = Depends(get_current_user)):
     class_obj = jsonable_encoder(class_data)
     new_class = await add_class(class_obj)
     return ResponseModel(new_class, "Class added successfully.")
