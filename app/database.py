@@ -1,6 +1,8 @@
 import motor.motor_asyncio
 from bson.objectid import ObjectId
 import json
+import pymongo
+from bson.json_util import dumps
 from bson import json_util
 
 MONGO_DETAILS = "mongodb://root:rootpassword@mongodb_container:27017"
@@ -12,7 +14,8 @@ database = client.classes
 class_collection = database.get_collection("class_collection")
 applications_collection = database.get_collection("applications_collection")
 
-
+User = database.users
+User.create_index([("email", pymongo.ASCENDING)], unique=True)
 # helpers
 
 
@@ -74,3 +77,18 @@ async def delete_class(id: str):
     if class_obj:
         await class_collection.delete_one({"_id": ObjectId(id)})
         return True
+
+
+# Add a new class into to the database
+async def register_user(user_data: dict) -> dict:
+    print(user_data)
+    class_obj = await User.insert_one(user_data)
+    new_class = await User.find_one({"_id": class_obj.inserted_id})
+    return dumps(new_class)
+
+
+# Retrieve a class with a matching ID
+async def retrieve_user(email: str) -> dict:
+    class_obj = await User.find_one({"email": email})
+    if class_obj:
+        return class_obj
