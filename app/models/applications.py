@@ -2,22 +2,24 @@ from typing import Optional, Union
 from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 from bson.objectid import ObjectId
-from bson import binData
-from models.classes import ClassSchema
+from app.models.classes import ClassSchema
 
-class Applications(BaseModel):
+class ApplicationSchema(BaseModel):
     email: str = EmailStr
+    name: str
     time: datetime
-    resume: binData
+    resume: str
     classes: list[ClassSchema]
     
 
     class Config:
         schema_extra = {
             "example": {
-                "name": "CS 4351",
-                "active":True,
-                "labs":[{
+                "email": "jdoe@mail.com",
+                "name": "John Doe",
+                "time": "2021-09-01T00:00:00",
+                "resume": "resume.pdf",
+                "classes":[{
                     'time':'2032-04-23T10:20:30.400+02:30',
                     'name':'N12'
                 },{
@@ -28,10 +30,12 @@ class Applications(BaseModel):
         }
 
 
-class UpdateApplicationsModel(BaseModel):
+class UpdateApplicationModel(BaseModel):
+    email: Optional[str] = EmailStr
     name: Optional[str]
-    active: Optional[bool]
-    labs: Optional[list[Labs]]
+    time: Optional[datetime]
+    resume: Optional[str]
+    classes: Optional[list[ClassSchema]]
 
     class Config:
         schema_extra = {
@@ -47,3 +51,13 @@ class UpdateApplicationsModel(BaseModel):
                 }]
             }
         }
+
+def ResponseModel(data, message):
+    return {
+        "data": [data],
+        "code": 200,
+        "message": message,
+    }
+
+def ErrorResponseModel(error, code, message):
+    return {"error": error, "code": code, "message": message}
